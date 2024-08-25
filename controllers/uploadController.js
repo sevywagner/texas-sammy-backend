@@ -17,17 +17,23 @@ exports.postUpdate = (req, res, next) => {
 
     Member.deleteAll().then(() => {
         for (let i = 0; i < members.length; i++) {
-            const cm = new Member(members[i].name, members[i].position, members[i].year, files[i].originalname, members[i].email || '', members[i].committee);
+            const cm = new Member(members[i].name, members[i].position, members[i].year, files[i] ? files[i].originalname : '', members[i].email || '', members[i].committee);
             cm.save().then((response) => {
-                return s3.putObject({
-                    Bucket: `texas-sammy-member-pics/${type}`,
-                    Key: files[i].originalname,
-                    Body: files[i].buffer,
-                }).promise();
+                if (type === 'Council') {
+                    return s3.putObject({
+                        Bucket: `texas-sammy-member-pics/${type}`,
+                        Key: files[i].originalname,
+                        Body: files[i].buffer,
+                    }).promise();
+                }
             }).then(() => {
 
             }).catch((err) => console.log(err));
         }
+
+        res.status(201).json({
+            message: 'Success'
+        })
     }).catch((err) => {
         console.log(err);
     });

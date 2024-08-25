@@ -2,8 +2,8 @@ const { getDb } = require('./../util/database');
 const CouncilMember = require('./CouncilMember');
 
 class CommitteeMember extends CouncilMember {
-    constructor (name, position, year, image, committee) {
-        super(name, position, year, image);
+    constructor (name, position, year, image, email, committee) {
+        super(name, position, year, image, email);
         this.committee = committee;
     }
 
@@ -15,6 +15,11 @@ class CommitteeMember extends CouncilMember {
     static deleteAll() {
         const db = getDb();
         return db.collection('CommitteeMember').deleteMany({});
+    }
+
+    static getAllMembers() {
+        const db = getDb();
+        return db.collection('CommitteeMember').find({}).toArray();
     }
 }
 

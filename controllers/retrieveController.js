@@ -15,13 +15,15 @@ exports.postGetMembers = (req, res, next) => {
     const Member = type === 'Council' ? CouncilMember : CommitteeMember;
     Member.getAllMembers().then(async (members) => {
 
-        for (const member of members) {
-            const response = await s3.getObject({
-                Key: member.image,
-                Bucket: `texas-sammy-member-pics/${type}`,
-            }).promise();
-
-            files.push("data:" + "application/json" + ";base64," + Buffer.from(response.Body).toString('base64'));
+        if (type === 'Council') {
+            for (const member of members) {
+                const response = await s3.getObject({
+                    Key: member.image,
+                    Bucket: `texas-sammy-member-pics/${type}`,
+                }).promise();
+    
+                files.push("data:" + "application/json" + ";base64," + Buffer.from(response.Body).toString('base64'));
+            }
         }
 
         res.status(200).json({
